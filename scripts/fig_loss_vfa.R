@@ -43,8 +43,8 @@ plot_dat$names <- factor(plot_dat$names, levels = c('vs','cel','hem','lig','CP',
 
 plot_dat$day <- round(plot_dat$day, 0)
 plot_dat$day <- gsub('283','After storage',plot_dat$day)
-plot_dat$day <- gsub('455','After AD, 38\u00B0 C',plot_dat$day)
-plot_dat$day <- factor(plot_dat$day, levels = c('After storage', 'After AD, 38\u00B0 C'))
+plot_dat$day <- gsub('455','After AD',plot_dat$day)
+plot_dat$day <- factor(plot_dat$day, levels = c('After storage', 'After AD'))
 
 plot_dat$temp <- as.factor(plot_dat$temp)
 
@@ -57,7 +57,7 @@ p_loss <- ggplot(plot_dat, aes(x = as.numeric(day), y = values_mean, col = temp,
   labs(y = 'Remaining mass, %', x = "", col = 'Temp, \u00B0 C', shape = 'Headspace gas', tag = 'a') + theme_bw() + 
   theme(axis.text.x = element_text(angle = 60,  hjust = 1, vjust = 1)) + facet_grid(~names, labeller = new.lab) +
   scale_color_manual(values = c("blue", "red")) + scale_shape_manual(values = c(1, 2), labels = c("Air", expression('N'[2]))) +
-  scale_x_continuous(limits = c(0.5, 2.5), breaks = c(1, 2), labels = c("After storage", 'After AD, 38\u00B0 C')) + 
+  scale_x_continuous(limits = c(0.5, 2.5), breaks = c(1, 2), labels = c("After storage", 'After AD')) + 
   geom_hline(yintercept = 100, color = 'gray', lty = 'dashed')
 
 #png('../figures/fig_loss.png', height = 4, width =7, units = 'in', res = 600)

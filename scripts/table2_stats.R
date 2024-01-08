@@ -31,7 +31,7 @@ ifelse(dat.org$gas == "air", dat.org$CH4_emis <- (as.numeric(dat.org$ch4) - CH4_
 day_spaced <- seq(from = min(dat.org$date), to = max(dat.org$date), 
                   length.out = max(dat.org$date) - min(dat.org$date) +1)
 
-dat.l <- dat.org %>% group_by(temp) %>% mutate(CH4_emis_C = CH4_emis * 12/16, CO2_emis_C = CO2_emis * 12/44) %>%
+dat.l <- dat.org %>% group_by(temp) %>% mutate(CH4_emis_C = CH4_emis * 12/16.04, CO2_emis_C = CO2_emis * 12/44.01) %>%
 pivot_longer(cols = c('CH4_emis_C', 'CO2_emis_C'), 
                names_to = 'comp', values_to = 'value')
 
@@ -75,8 +75,8 @@ emis.stat.biogas <- dat.info %>%
   mutate_all(~ ifelse(is.na(.), 0, .), ~ ifelse(.<0, 0, .)) %>% 
   mutate(weights_scale = rep(weights_scale$weights_scale, length = nrow(dat.info[dat.info$day >= 283,]))) %>% 
   group_by(reactor) %>%  
-  mutate(cum_CH4 = cumsum(vol_ch4)/bio_wet_weight * weights_scale * rho_CH4/1000, 
-         cum_CO2 = cumsum(vol_co2)/bio_wet_weight * weights_scale * rho_CO2/1000) %>%
+  mutate(cum_CH4 = cumsum(vol_ch4)/bio_wet_weight * weights_scale * rho_CH4/1000 * 12/16.04, 
+         cum_CO2 = cumsum(vol_co2)/bio_wet_weight * weights_scale * rho_CO2/1000 * 12/44.01) %>%
   pivot_longer(c('cum_CH4', 'cum_CO2'), names_to = "comp", values_to = "cum") %>%
   group_by(reactor, temp, gas, comp) %>% summarise(cum = cum[day == end]) %>% 
   group_by(comp) %>%

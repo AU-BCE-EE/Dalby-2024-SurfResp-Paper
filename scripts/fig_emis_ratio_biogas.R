@@ -146,10 +146,8 @@ fig_biogas <- ggplot(dat.s, aes(x = days, y = CH4_rate_mean, col = temp)) + geom
   geom_errorbar(aes(ymin = CH4_rate_mean - CH4_rate_sd, ymax = CH4_rate_mean + CH4_rate_sd, x = days)) + 
   facet_grid(comp~gas, labeller = new.lab) +
   labs(y = expression('Emission rate (g C kg'^{-1}~VS~'d'^{-1}*')'), x = 'Time (d)', col  = expression('Temp (\u00b0C)'), tag = 'b') +
-  lims(y = c(0,5)) +
+  coord_cartesian(ylim = c(0,5)) + 
   theme_bw() + theme(legend.position = '', axis.title.y = element_text(size = 10)) + scale_color_manual(values = c("blue", "red"))
-
-fig_biogas
 
 png('../figures/fig_emis_ratio_bio.png',  width = 18/2.54, height = 20/2.54, units = 'in', res = 600)
 grid::grid.draw(rbind(ggplotGrob(fig_emis), ggplotGrob(fig_ratio), ggplotGrob(fig_biogas)))
