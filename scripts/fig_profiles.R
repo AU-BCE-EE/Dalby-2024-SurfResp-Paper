@@ -30,6 +30,8 @@ for(i in unique(input_dat$id)){
   
 }
 
+plot_dat <- plot_dat[!grepl('Cattle', plot_dat$man_name),]
+
 fig_profiles <- ggplot(plot_dat, aes(umol, y = depth, group = id, col = time)) +
   geom_path(data = subset(plot_dat, type == "data")) +  # Add points for "data" category
   scale_y_continuous(trans = "reverse") +
@@ -40,11 +42,11 @@ fig_profiles <- ggplot(plot_dat, aes(umol, y = depth, group = id, col = time)) +
   scale_color_viridis(option = "D")  +
   theme_bw()
 
-png('../figures/fig_profiles.png',  width = 18/2.54, height = 18/2.54, units = 'in', res = 600)
+png('../figures/fig_profiles.png',  width = 18/2.54, height = 12/2.54, units = 'in', res = 600)
 grid::grid.draw(fig_profiles)
 dev.off()
 
-svg('../figures/fig_profiles.svg',  width = 18/2.54, height = 18/2.54)
+svg('../figures/fig_profiles.svg',  width = 18/2.54, height = 12/2.54)
 grid::grid.draw(fig_profiles)
 dev.off()
 
