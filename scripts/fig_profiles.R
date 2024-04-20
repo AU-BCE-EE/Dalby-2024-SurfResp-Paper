@@ -65,7 +65,8 @@ flux_dat$animal <- 'Pig'
 flux_dat$animal[grepl('Cattle',flux_dat$slurry)] <- 'Cattle'
 
 flux_dat_summary <- flux_dat %>% 
-  filter(!id %in% c(30, 31, 34, 35 ,36, 56, 70, 71), time > 0.7, type == 'model') %>%
+  filter(!id %in% c(30, 31, 34, 35 ,36, 56, 70, 71), time > 0.7, type == 'model') %>% 
+  filter(animal == 'Pig') %>%
   group_by(slurry, animal) %>%
   summarise(across(c('Vmax', 'KO2','flux_g_O2_m2_day','flux_g_CO2_m2_day'),
                    .fns = list(mean = mean, sd = sd)))

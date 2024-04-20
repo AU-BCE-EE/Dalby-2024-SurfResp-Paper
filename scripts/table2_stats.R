@@ -48,9 +48,9 @@ emis.stat.storage <- dat.l %>% group_by(reactor, comp, temp, gas) %>%
   mutate(cum = sum(approx(x = date, y = value, xout = day_spaced)$y)) %>% 
   mutate(cum = cum/1000) %>% 
   summarise(cum = cum[day == end.storage]) %>%
-  group_by(comp) %>% 
+  group_by(comp, temp) %>% 
   do({
-    fit <- aov(cum ~ gas * temp, data = .)
+    fit <- aov(cum ~ gas, data = .)
      posthoc <- TukeyHSD(fit)
     bind_rows(tidy(fit), tidy(posthoc))
   })
@@ -79,9 +79,9 @@ emis.stat.biogas <- dat.info %>%
          cum_CO2 = cumsum(vol_co2)/bio_wet_weight * weights_scale * rho_CO2/1000 * 12/44.01) %>%
   pivot_longer(c('cum_CH4', 'cum_CO2'), names_to = "comp", values_to = "cum") %>%
   group_by(reactor, temp, gas, comp) %>% summarise(cum = cum[day == end]) %>% 
-  group_by(comp) %>%
+  group_by(comp, temp) %>%
   do({
-    fit <- aov(cum ~ gas * temp, data = .)
+    fit <- aov(cum ~ gas, data = .)
     posthoc <- TukeyHSD(fit)
     bind_rows(tidy(fit), tidy(posthoc))
   })
@@ -114,9 +114,9 @@ emis.cum.combined <- bind_rows(emis.cum.storage, emis.cum.biogas) %>%
   mutate(experiment = "combined")
 
 emis.stat.combined <- emis.cum.combined %>% 
-  group_by(comp) %>%
+  group_by(comp, temp) %>%
   do({
-    fit <- aov(cum ~ gas * temp, data = .)
+    fit <- aov(cum ~ gas, data = .)
     posthoc <- TukeyHSD(fit)
     bind_rows(tidy(fit), tidy(posthoc))
   })
