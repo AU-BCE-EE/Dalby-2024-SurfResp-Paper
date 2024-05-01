@@ -55,7 +55,7 @@ grid::grid.draw(fig_profiles)
 dev.off()
 
 flux_stat <- plot_dat %>% group_by(type, id) %>% 
-  summarise(Vmax = mean(r), KO2 = mean(KO2), time = mean(time), slurry = man_name[1], flux_g_O2_m2_day = mean(flux) * 3600*24*10^-6*32*10000, flux_g_CO2_m2_day = flux_g_O2_m2_day * 0.44)
+  summarise(Vmax = mean(r), KO2 = mean(KO2), time = mean(time), slurry = man_name[1], flux_g_O2_m2_day = mean(flux) * 3600*24*10^-6*32*10000, flux_g_CO2_m2_day = flux_g_O2_m2_day * 0.33)
 
 write.csv(flux_stat, '../output/flux_stat.csv', row.names = F)
 

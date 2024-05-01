@@ -52,7 +52,7 @@ kH_oxygen <- 0.0013 * exp(1700 * ((1 / temp_K) - (1 / temp_standard))) * 32 * 10
 E_surf <- c(unique(means$CO2_surf_mean_10), unique(means$CO2_surf_mean_20))
 area <- surf_area
 temp_C <- temp_K - 273.15
-pars <- data.frame(kH_oxygen = kH_oxygen, E_surf = E_surf, area = area, temp_C = temp_C) 
+pars <- data.frame(kH_oxygen = kH_oxygen, E_surf = E_surf, area = area, temp_C = temp_C, temp_K = temp_K) 
 
 # calculate CO2 productivity coeff:
 source('stoich.R')
@@ -69,20 +69,13 @@ conc_fresh[['VSd']] <- 0
 
 sub_resp <- y$Cfat + y$CP + y$RFd + y$starch 
 
-# initial guess on equation. iterate 1000 times.
-kl.oxygen <- exp(-0.05 + 0.1 * temp_C)
-i <- 0
-
-while(i < 1000){
-respiration <- kl.oxygen * area * ((kH_oxygen * 0.208) - 0) * (sub_resp / 1) / 100
-alpha <- 0
-pCO2 <- stoich(alpha, y, conc_fresh, sub_resp, respiration[1])$CO2_resp/respiration[1]
+alpha <- 0 # hydrolysis rate, set to 0 as it does not matter but function requires it. 
+pCO2 <- stoich(alpha, y, conc_fresh, sub_resp, respiration = 1)$CO2_resp/1 # respiration is just 1, the size of it does not influence the pCO2 coef (try yourself)
 pars$kl.oxygen <- pars$E_surf/pCO2 / (pars$kH_oxygen * 0.208)
+
 #Fit the linear regression model
 model <- lm(log(kl.oxygen) ~ temp_C, data = pars)
-kl.oxygen <- exp(-model$coefficients[1] + model$coefficients[2] * temp_C) # from own lab experiments (Dalby et al. 2023..unpublished) 
-i <- i + 1
-}
+kl.oxygen <- exp(model$coefficients[1] + model$coefficients[2] * temp_C) # from own lab experiments (Dalby et al. 2023..unpublished) 
 
 plot(pars$temp_C, pars$kl.oxygen, 
      xlim = c(5, 25), ylab = expression('kl'[O2]*'(m day'^{-1}*')'), xlab = 'Temperature (\u00B0 C)')
@@ -93,8 +86,14 @@ pred <- exp(model$coefficients[1] + model$coefficients[2] * temps)
 pred_klo2 <- data.frame(cbind(temp = as.numeric(temps), klo2 = as.numeric(pred), type = 'model'))
 plot_klo2 <- data.frame(rbind(pred_klo2, data.frame(temp = pars$temp_C, klo2 = pars$kl.oxygen, type = 'data')))
 
+# uncertainty on kl.o2: 
+
+sds_plot <- c(sds$CO2_emis_sd_10[1], sds$CO2_emis_sd_20[1])/pCO2 / (pars$kH_oxygen * 0.208)
+
 ggplot(plot_klo2, aes(as.numeric(temp), as.numeric(klo2))) +
-  geom_line() +
+  geom_line() + 
+  geom_linerange(data = subset(plot_klo2, type == 'data'), 
+                aes(x = as.numeric(temp), y = as.numeric(klo2), ymin = as.numeric(klo2) - sds_plot, ymax = as.numeric(klo2) + sds_plot)) +
   geom_point(data = subset(plot_klo2, type == 'data'), aes(as.numeric(temp), as.numeric(klo2)), col = "red", size = 1) + theme_bw() +
   labs(y = expression('kl'[O2]*'(m day'^{-1}*')'), x = 'Temperature (\u00B0 C)')
 ggsave('../figures/fig_klo2.png', height = 3, width = 3)

@@ -27,10 +27,10 @@ mng_pars_barn = list(slurry_prod_rate = 2000 * 5.7,
                  resid_enrich = 0.9,
                  slopes = c(urea = NA, slurry_prod_rate = NA),
                  graze = c(start = 'May', duration = 0, hours_day = 0),
-                 scale = c(ks_coefficient = 1, qhat_opt = 1, xa_fresh = 1, yield = 1, alpha_opt = 1))
+                 scale = c(ks_coefficient = 1, qhat_opt = 1, xa_fresh = 1, yield = 1))
 
 man_pars_barn = list(conc_fresh = list(sulfide = 0.01, urea = 3.45, sulfate = 0.2, TAN = 0, starch = 5.25, 
-                                  VFA = 1.71, xa_dead = 0, Cfat = 27.58, CP = 21.13, RFd = 25.43, iNDF = 11.31, 
+                                  VFA = 1.71, xa_aer = 0, xa_bac = 0, xa_dead = 0, Cfat = 27.58, CP = 21.13, RFd = 25.43, iNDF = 11.31, 
                                   VSd = 0, VSd_A = 54.78, VSnd_A = 23.48, ash = 15), pH = 7, dens = 1000)
 
 days <- 3*365
@@ -92,7 +92,7 @@ mng_pars_storage = list(slurry_prod_rate = 0,
                      resid_enrich = 0.9,
                      slopes = c(urea = NA, slurry_prod_rate = NA),
                      graze = c(start = 'May', duration = 0, hours_day = 0),
-                     scale = c(ks_coefficient = 1, qhat_opt = 1, xa_fresh = 1, yield = 1, alpha_opt = 1))
+                     scale = c(ks_coefficient = 1, qhat_opt = 1, xa_fresh = 1, yield = 1))
 
 man_pars_storage = list(conc_fresh = conc_fresh_storage, pH = 7.3, dens = 1000)
 
@@ -115,9 +115,9 @@ dat$mol.ratio <- dat$mol.CH4/(dat$mol.CH4 + dat$mol.CO2)
 dat.plot_CO2 <- dat %>% filter(time > 2*365) %>% mutate(time = time - 2*365, 
                                                         CH4_emis_rate = CH4_emis_rate * 12/16/n_anim, 
                                                         CO2_emis_rate = CO2_emis_rate * 12/44/n_anim,
-                                                        respiration = respiration * 0.436 * 12/44/n_anim,
+                                                        respiration = CO2_resp * 12/44/n_anim,
                                                         ureolysis = rut_urea * 1.57*12/44/n_anim,
-                                                        fermentation = CO2_ferm_CO2*12/44/n_anim,
+                                                        fermentation = CO2_ferm_CO2 * 12/44/n_anim,
                                                         methanogenesis = (CO2_ferm_meth_sr_CO2 - CO2_ferm_CO2)*12/44/n_anim,
                                                         slurry_mass = slurry_mass / 1000
 ) %>%
