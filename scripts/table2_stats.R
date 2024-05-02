@@ -122,8 +122,11 @@ emis.stat.combined <- emis.cum.combined %>%
   })
 
 
-write.csv(rbind(emis.cum.storage, emis.cum.biogas, emis.cum.combined), "../output/emis_cum_dat.csv", row.names = F)
-write.csv(rbind(emis.stat.storage, emis.stat.biogas, emis.stat.combined), "../output/emis_cum_stat.csv", row.names = F)
+emis_all <- rbind(emis.cum.storage, emis.cum.biogas, emis.cum.combined)
+stat_all <- rbind(emis.stat.storage, emis.stat.biogas, emis.stat.combined)
+
+write.csv(emis_all, "../output/emis_cum_dat.csv", row.names = F)
+write.csv(stat_all, "../output/emis_cum_stat.csv", row.names = F)
 
 
 table2.storage <- emis.cum.storage %>% group_by(temp, gas, comp) %>% summarise(across(cum, .fns = list(mean = mean, std = sd)))

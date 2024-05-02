@@ -42,17 +42,6 @@ surf_conv <- mean(mass/surf_area) # convert mg / kg slurry / day to mg / m2 / da
 dat.mod <- dat_gas %>% group_by(temp, gas, day, date) %>% 
   mutate(ratio = (CH4_emis * 12.01/16.04)/(CH4_emis * 12.01/16.04 + CO2_emis * 12.01/44.01)) %>% mutate(CH4_emis_C = CH4_emis * 12/16, CO2_emis_C = CO2_emis * 12/44) %>% 
   group_by(temp, gas, day, date) %>% summarise(across(c('CO2_emis_C','CH4_emis_C', 'CO2_emis','CH4_emis', 'ratio'), .fns = list(mean = mean, sd = sd), na.rm = TRUE)) 
-dat.mod$CO2_surf_emis_mean <- 0
-dat.mod$CO2_surf_emis_mean[dat.mod$temp == 10 & dat.mod$gas == 'air'] <- dat.mod$CO2_emis_mean[dat.mod$temp == 10 & dat.mod$gas == 'air'] - dat.mod$CO2_emis_mean[dat.mod$temp == 10 & dat.mod$gas == 'n2']
-dat.mod$CO2_surf_emis_mean[dat.mod$temp == 20 & dat.mod$gas == 'air'] <- dat.mod$CO2_emis_mean[dat.mod$temp == 20 & dat.mod$gas == 'air'] - dat.mod$CO2_emis_mean[dat.mod$temp == 20 & dat.mod$gas == 'n2']
-dat.mod$CO2_surf_emis_sd <- 0
-dat.mod$CO2_surf_emis_sd[dat.mod$temp == 10 & dat.mod$gas == 'air'] <- sqrt((dat.mod$CO2_emis_sd[dat.mod$temp == 10 & dat.mod$gas == 'air'])^2 - (dat.mod$CO2_emis_sd[dat.mod$temp == 10 & dat.mod$gas == 'n2'])^2)
-dat.mod$CO2_surf_emis_sd[dat.mod$temp == 20 & dat.mod$gas == 'air'] <- sqrt((dat.mod$CO2_emis_sd[dat.mod$temp == 20 & dat.mod$gas == 'air'])^2 + (dat.mod$CO2_emis_sd[dat.mod$temp == 20 & dat.mod$gas == 'n2'])^2)
-
-dat.mod$CO2_surf_emis_mean <- dat.mod$CO2_surf_emis_mean /1000 * surf_conv
-dat.mod$CO2_surf_emis_sd <- dat.mod$CO2_surf_emis_sd /1000 * surf_conv
-
-# CO2_surf_emis has units of gCO2/m2
 
 dat.mod.long <- dat.mod %>% pivot_longer(cols = c('CH4_emis_C_mean', 'CO2_emis_C_mean', 'CH4_emis_C_sd', 'CO2_emis_C_sd'), names_to = 'comp', values_to = 'value')
 
@@ -101,12 +90,13 @@ fig_ratio <- ggplot(dat.mod.both, aes(x = day, y = value, col = temp)) +
   labs(y = expression('Molar fraction'), x = "Time (d)", col = expression('Temp (\u00b0C)'))+
   scale_color_manual(values = c('blue', 'red'))
 
+library(biogas)
 
 ## BIOGAS part
 rho_CH4 <- 0.665 # at 22 deg C, kg/m3
 rho_CO2 <- 1.802
 
-dat_biogas <- data.frame(read_excel("../data/dat_resp.xlsx", sheet = "info"))
+dat_biogas <- data.frame(read_excel("../data/dat_resp.xlsx", sheet = "info")) %>% filter(day >= 283)
 weights_scale <- dat_biogas %>% select(wet_weight, day, reactor) %>% filter(day >= 283, day< 283.1) %>% 
   mutate(weights_scale = wet_weight)
 nrow(dat_biogas)
