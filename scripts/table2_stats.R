@@ -121,16 +121,17 @@ emis.stat.combined <- emis.cum.combined %>%
     bind_rows(tidy(fit), tidy(posthoc))
   })
 
-
 emis_all <- rbind(emis.cum.storage, emis.cum.biogas, emis.cum.combined)
 stat_all <- rbind(emis.stat.storage, emis.stat.biogas, emis.stat.combined)
 
 write.csv(emis_all, "../output/emis_cum_dat.csv", row.names = F)
 write.csv(stat_all, "../output/emis_cum_stat.csv", row.names = F)
 
-
 table2.storage <- emis.cum.storage %>% group_by(temp, gas, comp) %>% summarise(across(cum, .fns = list(mean = mean, std = sd)))
 table2.biogas <- emis.cum.biogas %>% group_by(temp, gas, comp) %>% summarise(across(cum, .fns = list(mean = mean, std = sd)))
 table2.combined <- emis.cum.combined %>% group_by(temp, gas, comp) %>% summarise(across(cum, .fns = list(mean = mean, std = sd)))
+table2.all <- rbind(table2.storage, table2.biogas, table2.combined)
+
+table2.all_VS <- table2.all %>% mutate(cum_mean = cum_mean/0.089675, cum_std = cum_std/0.089675)
 
 write.csv(rbind(table2.storage, table2.biogas, table2.combined), '../output/table2.csv', row.names = F)
