@@ -1,6 +1,8 @@
 rm(list = ls())
 
-library(dplyr)
+library('dplyr')
+library('tidyr')
+library('broom')
 
 storage_dat <- read.csv('../output/emis_stat_storage.csv')
 biogas_dat <- read.csv('../output/emis_stat_biogas.csv')
