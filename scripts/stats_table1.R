@@ -14,6 +14,7 @@ combined <- rbind(storage_dat, biogas_dat) %>%
 
 dat_stat <- rbind(storage_dat, biogas_dat, combined)
 
+# statistics
 model <- dat_stat %>% group_by(comp, incubation) %>% 
   do({
     fit <- aov(cum ~ gas * temp, data = .)
@@ -21,5 +22,7 @@ model <- dat_stat %>% group_by(comp, incubation) %>%
     bind_rows(tidy(fit), tidy(posthoc))
   })
 
+
+# output for table 1
 table1 <- dat_stat %>% group_by(gas, temp, comp, incubation) %>% 
   summarise(mean = mean(cum), std = sd(cum))
