@@ -1,5 +1,7 @@
 rm(list = ls())
 
+library(dplyr)
+
 storage_dat <- read.csv('../output/emis_stat_storage.csv')
 biogas_dat <- read.csv('../output/emis_stat_biogas.csv')
 
