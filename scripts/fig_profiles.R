@@ -42,6 +42,7 @@ fig_profiles <- ggplot(plot_dat, aes(umol, y = depth, group = id, col = time)) +
   scale_color_viridis(option = "D")  +
   theme_bw()
 
+
 png('../figures/fig_profiles.png',  width = 18/2.54, height = 12/2.54, units = 'in', res = 600)
 grid::grid.draw(fig_profiles)
 dev.off()

@@ -12,15 +12,22 @@ combined <- rbind(storage_dat, biogas_dat) %>%
   summarise(cum = sum(cum)) %>% 
   mutate(incubation = 'combined')
 
-dat_stat <- rbind(storage_dat, biogas_dat, combined)
+dat_stat <- rbind(storage_dat, biogas_dat, combined) %>% mutate(temp = factor(temp))
 
 # statistics
-model <- dat_stat %>% group_by(comp, incubation) %>% 
+model1 <- dat_stat %>% group_by(comp, incubation) %>% 
   do({
     fit <- aov(cum ~ gas * temp, data = .)
     posthoc <- TukeyHSD(fit)
     bind_rows(tidy(fit), tidy(posthoc))
   })
+
+model2 <- dat_stat %>% group_by(comp, incubation) %>% 
+  do({
+    fit <- aov(cum ~ gas + temp, data = .)
+    bind_rows(tidy(fit))
+  })
+
 
 
 # output for table 1

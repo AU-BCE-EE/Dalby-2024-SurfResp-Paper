@@ -97,7 +97,7 @@ new.lab = as_labeller(c(air = 'Air', n2 = 'N[2]', CH4 = 'CH[4]'), label_parsed)
 
 fig_biogas <- ggplot(GDout_tb, aes(time, mCH4_C_mean, col = temp)) + geom_line() + geom_point() + 
   geom_errorbar(aes(ymin = mCH4_C_mean - mCH4_C_sd, ymax = mCH4_C_mean + mCH4_C_sd, x = time)) +
-  facet_grid(compound~gas) + 
+  facet_grid(compound~gas, labeller = new.lab) + 
   labs(y = expression('Emission rate (g C kg'^{-1}~VS~'d'^{-1}*')'), x = 'Time (d)', col  = expression('Temp (\u00b0C)'), tag = 'b') +
   coord_cartesian(ylim = c(0,2.5)) + 
   theme_bw() + theme(legend.position = '', axis.title.y = element_text(size = 10)) + scale_color_manual(values = c("blue", "red"))
