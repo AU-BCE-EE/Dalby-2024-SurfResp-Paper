@@ -45,6 +45,16 @@ dat.mod.sd <- dat.mod.long[grepl('sd$', dat.mod.long$comp),]
 dat.mod.both <- cbind(dat.mod.mean, sd = dat.mod.sd$value) 
 dat.mod.both$temp <- as.factor(dat.mod.both$temp)
 
+library(data.table)
+
+setDT(dat.mod.both)
+selected <- dat.mod.both[, .(day, temp, gas, CH4_emis_mean, CO2_emis_mean)]
+selected <- selected[!duplicated(selected)]
+
+library(openxlsx)
+dat.mod.both_select <- setDT(dat.mod.both)
+
+write.xlsx(selected, 'dat_interp.xlsx')
 # plot emission rates
 new.lab <- as_labeller(c(air = "Air", n2 = "N[2]", CH4_emis_C_mean = "CH[4]", CO2_emis_C_mean = "CO[2]"), label_parsed)
 
